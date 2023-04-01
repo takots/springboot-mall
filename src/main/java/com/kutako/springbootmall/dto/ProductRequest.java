@@ -1,30 +1,31 @@
-package com.kutako.springbootmall.model;
+package com.kutako.springbootmall.dto;
 
 import com.kutako.springbootmall.constant.ProductCategory;
-import org.springframework.core.SpringVersion;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 
-public class Product {
-    private  Integer productId;
+// 這個 class 用途是去接前端傳過來的參數
+public class ProductRequest {
+
+//   資料庫自動生成 ,不需要前端傳過來的
+//    private  Integer productId;
+    @NotNull
     private String productName;
-
-    // 使用 String 來存商品分類 ,無法得知有哪些類型的存在
+    @NotNull
     private ProductCategory category;
+    @NotNull
     private String imageUrl;
+    @NotNull
     private Integer price;
+    @NotNull
     private Integer stock;
+    // 不是每一個商品都會有詳細的說明 ,所以允許為空值
     private String description;
-    private Date createDate;
-    private Date lastModifiedDate;
+//    時間到時候讓資料庫自動產生
+//    private Date createDate;
+//    private Date lastModifiedDate;
 
-    public Integer getProductId() {
-        return productId;
-    }
-
-    public void setProductId(Integer productId) {
-        this.productId = productId;
-    }
 
     public String getProductName() {
         return productName;
@@ -72,21 +73,5 @@ public class Product {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Date getCreateDate() {
-        return createDate;
-    }
-
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
-    }
-
-    public Date getLastModifiedDate() {
-        return lastModifiedDate;
-    }
-
-    public void setLastModifiedDate(Date lastModifiedDate) {
-        this.lastModifiedDate = lastModifiedDate;
     }
 }
