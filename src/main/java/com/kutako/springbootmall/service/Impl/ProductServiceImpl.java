@@ -1,17 +1,18 @@
-package com.kutako.springbootmall.service;
+package com.kutako.springbootmall.service.Impl;
 
 import com.kutako.springbootmall.constant.ProductCategory;
 import com.kutako.springbootmall.dao.ProductDao;
 import com.kutako.springbootmall.dto.ProductQueryParams;
 import com.kutako.springbootmall.dto.ProductRequest;
 import com.kutako.springbootmall.model.Product;
+import com.kutako.springbootmall.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
 @Component
-public class ProductServiceImpl implements ProductService{
+public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductDao productDao;
