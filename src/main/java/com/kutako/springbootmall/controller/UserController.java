@@ -1,5 +1,6 @@
 package com.kutako.springbootmall.controller;
 
+import com.kutako.springbootmall.dto.UserLoginRequest;
 import com.kutako.springbootmall.dto.UserRegisterRequest;
 import com.kutako.springbootmall.model.User;
 import com.kutako.springbootmall.service.UserService;
@@ -30,5 +31,11 @@ public class UserController {
         User user = userService.getUserById(userId);
         // 回應狀態碼 201 CREATED ,並將 user 創建出來的資訊放到 body 裡面
         return ResponseEntity.status(HttpStatus.CREATED).body(user);
+    }
+
+    @PostMapping("/users/login")
+    public ResponseEntity<User> login(@RequestBody @Valid UserLoginRequest userLoginRequest){
+        User user = userService.login(userLoginRequest);
+        return ResponseEntity.status(HttpStatus.OK).body(user);
     }
 }
