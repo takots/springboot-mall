@@ -25,7 +25,7 @@ public class UserController {
         // 2. 資安考量 ,需要使用 request body 傳遞參數
 
         // 預期 userService 會有一個 register 的方法去創建一個使用者帳號 ,回傳 userId
-        Integer userId = userService.register(userRegisterRequest);
+        Integer userId = userService.register(userRegisterRequest ,userRegisterRequest.getEmail());
         // 藉由回傳的 userId 我們可以去查詢用這個 user 的資訊
         User user = userService.getUserById(userId);
         // 回應狀態碼 201 CREATED ,並將 user 創建出來的資訊放到 body 裡面
