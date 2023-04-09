@@ -1,6 +1,7 @@
 package com.kutako.springbootmall.dao.impl;
 
 import com.kutako.springbootmall.dao.OrderDao;
+import com.kutako.springbootmall.dto.OrderQueryParams;
 import com.kutako.springbootmall.model.Order;
 import com.kutako.springbootmall.model.OrderItem;
 import com.kutako.springbootmall.rowmapper.OrderItemRowMapper;
@@ -12,16 +13,40 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class OrderDaoImpl implements OrderDao {
-
     @Autowired
     private NamedParameterJdbcTemplate namedParameterJdbcTemplate;
+
+    @Override
+    public List<Order> getOrders(OrderQueryParams orderQueryParams) {
+        String SqlStr= "SELECT  order_id ,user_id ,total_amount ,created_date ,last_modified_date "
+                     + "FROM `order` WHERE 1=1 ";
+        Map<String ,Object> map = new HashMap<>();
+        SqlStr = addFilteringSql(SqlStr ,map ,orderQueryParams);
+
+        // 排序
+        SqlStr += " ORDER BY created_date DESC";
+
+        // 分頁
+        SqlStr += " LIMIT :limit OFFSET :offset";
+        map.put("limit" ,orderQueryParams.getLimit());
+        map.put("offset" ,orderQueryParams.getOffset());
+
+        List<Order> orderList = namedParameterJdbcTemplate.query(SqlStr ,map ,new OrderRowMapper());
+        return orderList;
+    }
+
+    @Override
+    public Integer countOrder(OrderQueryParams orderQueryParams) {
+        String SqlStr= "SELECT COUNT(*) FROM `order` WHERE 1=1 ";
+        Map<String ,Object> map = new HashMap<>();
+        SqlStr = addFilteringSql(SqlStr ,map ,orderQueryParams);
+        Integer total = namedParameterJdbcTemplate.queryForObject(SqlStr ,map ,Integer.class);
+        return total;
+    }
 
     @Override
     public Order getOrderById(Integer orderId) {
@@ -94,5 +119,13 @@ public class OrderDaoImpl implements OrderDao {
             parameterSources[i].addValue("amount" ,orderItem.getAmount());
         }
         namedParameterJdbcTemplate.batchUpdate(SqlStr ,parameterSources);
+    }
+
+    private String addFilteringSql(String SqlStr ,Map<String ,Object> map ,OrderQueryParams orderQueryParams){
+        if(orderQueryParams.getUserId() != null){
+            SqlStr += " AND user_id = :userId";
+            map.put("userId" ,orderQueryParams.getUserId());
+        }
+        return SqlStr;
     }
 }
