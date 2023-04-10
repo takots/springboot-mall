@@ -98,23 +98,13 @@ public class ProductDaoImpl implements ProductDao {
                       + " created_date, last_modified_date FROM product WHERE 1=1 ";
         Map<String ,Object> map = new HashMap<>();
 
-        ProductCategory category = productQueryParams.getProductCategory();
-        String search = productQueryParams.getSearch();
         String orderBy = productQueryParams.getOrderBy();
         String sort = productQueryParams.getSort();
         Integer limit = productQueryParams.getLimit();
         Integer offset = productQueryParams.getOffset();
 
         // 查詢條件 Filtering
-        if(category != null){
-            SqlStr += " AND category=:category";
-            map.put("category",category.name());
-        }
-
-        if(search != null){
-            SqlStr += " AND product_name LIKE :search";
-            map.put("search","%"+search+"%");
-        }
+        SqlStr = addFilteringSql(SqlStr ,map ,productQueryParams);
 
         // 排序 Sorting
         SqlStr += " ORDER BY " + orderBy + " " + sort;
@@ -132,10 +122,28 @@ public class ProductDaoImpl implements ProductDao {
     public Integer countProduct(ProductQueryParams productQueryParams) {
         String SqlStr = "SELECT COUNT(*) FROM product WHERE 1=1";
         Map<String ,Object> map = new HashMap<>();
+        // 查詢條件 Filtering
+        SqlStr = addFilteringSql(SqlStr ,map ,productQueryParams);
+        // 通常用在取 count 值的時候 , Integer.class 表示要將 count 的值轉換成 Integer 類型
+        Integer total = namedParameterJdbcTemplate.queryForObject(SqlStr ,map ,Integer.class);
 
+        return total;
+    }
+
+    @Override
+    public void updateStock(Integer productId, Integer stock) {
+        String SqlStr=" UPDATE product SET stock = :stock ,last_modified_date = :lastModifiedDate "
+                     +" WHERE product_id = :productId";
+        Map<String ,Object> map = new HashMap<>();
+        map.put("productId" ,productId);
+        map.put("stock" ,stock);
+        map.put("lastModifiedDate" ,new Date());
+        namedParameterJdbcTemplate.update(SqlStr ,map);
+    }
+
+    private String addFilteringSql(String SqlStr ,Map<String ,Object> map ,ProductQueryParams productQueryParams){
         ProductCategory category = productQueryParams.getProductCategory();
         String search = productQueryParams.getSearch();
-
         // 查詢條件 Filtering
         if(category != null){
             SqlStr += " AND category=:category";
@@ -146,10 +154,6 @@ public class ProductDaoImpl implements ProductDao {
             SqlStr += " AND product_name LIKE :search";
             map.put("search","%"+search+"%");
         }
-
-        // 通常用在取 count 值的時候 , Integer.class 表示要將 count 的值轉換成 Integer 類型
-        Integer total = namedParameterJdbcTemplate.queryForObject(SqlStr ,map ,Integer.class);
-
-        return total;
+        return SqlStr;
     }
 }
