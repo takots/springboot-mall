@@ -9,7 +9,7 @@
 - Dao 層使用 Spring JDBC
 <br>
 
-# 
+# action
 
 - 商品功能 
     - 查詢商品列表
